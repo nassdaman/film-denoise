@@ -1,0 +1,57 @@
+╔══════════════════════════════════════════════════════════════╗
+║              Grav1synth Film Grain Presets                 ║
+║        grav1synth apply input.ivf -o output.ivf --preset X ║
+╚══════════════════════════════════════════════════════════════╝
+
+── BASE PRESETS ──────────────────────────────────────────────
+
+  Super8       Finest, least visible grain (8mm film)
+  MaxMid       Synthetic heavy midtone grain (custom)
+  16mm         Coarse, very pronounced grain
+  Classic35    Medium-fine, balanced (Super 35mm)
+  Modern35     Finest of the 35mm family (Full Frame)
+
+  Grain visibility:  Super8 < Modern35 < Classic35 < 16mm < MaxMid
+
+── FILM STOCK MODIFIERS (-1 / -2 / -3) ──────────────────────
+
+  Applies to: 16mm, Classic35, Modern35
+  (none)      Fujifilm Eterna 250D  ──  cleanest
+  -1          Fujifilm Eterna 500T  ──  slightly more
+  -2          Kodak Vision3 250D    ──  moderately more
+  -3          Kodak Vision3 200T    ──  most grain
+
+  More grain:  (none) < -1 < -2 < -3
+
+── QUICK RECOMMENDATIONS ────────────────────────────────────
+
+  Clean look:         --preset Modern35
+  Classic film look:  --preset Classic35-2
+  Gritty/16mm:        --preset 16mm-1
+  Heavy/grindhouse:   --preset 16mm
+  Subtle texture:     --preset Super8
+
+── ISO MODE (photon-noise, gradual control) ─────────────────
+
+  --grain-iso 100    Barely visible
+  --grain-iso 400    Light film-like texture
+  --grain-iso 800    Moderate, natural grain
+  --grain-iso 1600   Noticeable grain
+  --grain-iso 6400   Heavy grain
+
+── CLI EXAMPLES ──────────────────────────────────────────────
+
+  # Denoise + Modern35 film grain
+  film_denoiser.py encode source.mkv --denoise-preset medium \
+      --grain-preset Modern35 --crf 26
+
+  # Denoise + 16mm with Kodak Vision3 250D modifier
+  film_denoiser.py encode source.mkv --denoise-preset medium \
+      --grain-preset 16mm-2 --crf 26
+
+  # Denoise + ISO photon-noise grain
+  film_denoiser.py encode source.mkv --denoise-preset medium \
+      --grain-iso 800 --crf 26
+
+  # No denoise, no grain (clean encode)
+  film_denoiser.py encode source.mkv --no-denoise --crf 20
