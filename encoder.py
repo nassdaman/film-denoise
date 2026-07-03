@@ -125,12 +125,15 @@ def _register_temp(path: str):
 def get_opus_bitrate(channels: int) -> int:
     """Return recommended Opus bitrate (kbps) based on source channel count.
 
-    Stereo/mono sources: 128 kbps
-    5.1+ sources: 256 kbps (compensates for downmix quality loss)
+    Mono/stereo (≤2ch): 128 kbps
+    Surround up to 6ch: 192 kbps
+    7ch+ (7.1 etc.):   256 kbps (compensates for downmix quality loss)
     """
-    if channels >= 6:
-        return 256
-    return 128
+    if channels <= 2:
+        return 128
+    if channels <= 6:
+        return 192
+    return 256
 
 
 def _cleanup_temps():
@@ -555,8 +558,14 @@ class EncodeJob:
                 continue
             if at.action == AudioAction.ENCODE:
                 cmd += ["-map", f"1:a:{ai}"]
-                cmd += ["-c:a", "libopus", "-b:a", f"{at.encode_bitrate}k",
-                        "-ac", "2", "-mapping_family", "0"]
+                cmd += ["-c:a", "libopus", "-b:a", f"{at.encode_bitrate}k"]
+                if at.channels > 2:
+                    # Multichannel: mapping_family 255 for discrete channels
+                    # Avoids FFmpeg ticket #5718 (5.1(side) layout validation bug)
+                    # without needing audio filter remapping
+                    cmd += ["-mapping_family", "255"]
+                # For stereo/mono (≤2ch): no -ac, no mapping_family needed
+                # ffmpeg default (-1) handles stereo/mono correctly
             else:  # PASSTHROUGH
                 # NOTE: Passthrough + audio offset may have ±1 frame imprecision
                 # (~10-35ms for most codecs) because ffmpeg seeks on audio frame

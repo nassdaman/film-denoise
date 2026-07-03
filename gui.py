@@ -607,7 +607,7 @@ class FilmDenoiserGUI:
             info_label.configure(text_color=("#1a7a1a", "#4caf50"))
 
         action_menu = ctk.CTkOptionMenu(
-            row, values=["Passthrough", "Encode to Stereo Opus"], width=160
+            row, values=["Passthrough", "Encode to Opus"], width=160
         )
         action_menu.set("Passthrough")
 
@@ -631,7 +631,7 @@ class FilmDenoiserGUI:
 
         def on_action_change(value, i=idx):
             widgets = self.audio_track_widgets[i]
-            if value == "Encode to Stereo Opus":
+            if value == "Encode to Opus":
                 widgets["bitrate_label"].pack(side="left", padx=2)
             else:
                 widgets["bitrate_label"].pack_forget()
@@ -714,7 +714,7 @@ class FilmDenoiserGUI:
             track = w["track"]
             track.selected = (w["checkbox_var"].get() == "on")
             action_text = w["action_menu"].get()
-            if action_text == "Encode to Stereo Opus":
+            if action_text == "Encode to Opus":
                 track.action = AudioAction.ENCODE
                 track.encode_bitrate = get_opus_bitrate(track.channels)
             else:
