@@ -522,7 +522,10 @@ class EncodeJob:
         offset = max(0.0, self.video_start_time - self.audio_start_time)
         if offset > 0.001:  # 1ms threshold — ignore negligible offsets
             cmd += ["-ss", str(offset)]
-        cmd += ["-fflags", "+genpts+igndts", "-i", self.source]
+        # -vn -dn: skip video/data streams — we only need audio & subs from this input.
+        # Without this, ffmpeg initializes all decoders (DV enhancement layer, etc.)
+        # causing unusual failures (exit code 218) on DV/HDR10+ sources.
+        cmd += ["-vn", "-dn", "-fflags", "+genpts+igndts", "-i", self.source]
 
         # Video output
         cmd += ["-map", "0:v:0"]
